@@ -19,7 +19,8 @@ class BurgerBuilder extends Component {
             meat: 0
         },
         totalPrice: 4,
-        purchasable: false
+        purchasable: false,
+        purchasing: false
     }
     updatePurchaseState(ingredients){
         const sum = Object.keys(ingredients)
@@ -62,6 +63,13 @@ class BurgerBuilder extends Component {
         this.updatePurchaseState(updatedIngredients);
     }
     
+    purchaseHandler = () => {
+        
+        this.setState({purchasing:true})
+    }
+    purchaseCancelHandler = () =>{
+        this.setState({purchasing:false})
+    }
     render(){
         const disableInfo ={
             ...this.state.ingredients
@@ -71,7 +79,7 @@ class BurgerBuilder extends Component {
         }
         return (
             <React.Fragment>
-            <Modal>
+            <Modal show = {this.state.purchasing} modalClosed = {this.purchaseCancelHandler}>
                 <OrderSummery ingredients= {this.state.ingredients}/>
             </Modal>
                <Burger ingredients= {this.state.ingredients}/>
@@ -80,7 +88,8 @@ class BurgerBuilder extends Component {
                ingredientRemoved = {this.removeIngredientHandler}
                disabled = {disableInfo}
                purchasable = {this.state.purchasable}
-               price = {this.state.totalPrice}/>
+               price = {this.state.totalPrice}
+               ordered = {this.purchaseHandler}/>
             </React.Fragment>
         );
     }
