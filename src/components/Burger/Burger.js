@@ -12,8 +12,8 @@ const burger = (props) => {
                 return <BurgerIngredient key={igKey + i} type={igKey} />
              })
     })
-    .reduce((transformedIngredients, initalValue) => {
-      return transformedIngredients.concat(initalValue)
+    .reduce((transformedIngredients, initialValue) => {
+      return transformedIngredients.concat(initialValue)
     }, []);
     if(transformedIngredients.length === 0){
         transformedIngredients = <p>Please add ingredients!</p>
