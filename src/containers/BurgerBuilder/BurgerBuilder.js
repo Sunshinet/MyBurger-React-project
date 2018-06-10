@@ -25,9 +25,10 @@ class BurgerBuilder extends Component {
     }
 
     componentDidMount() {
+        console.log(this.props);
         axios.get('https://react-my-burger-370c6.firebaseio.com/ingredients.json')
             .then(response => {
-                console.log(response)
+                //console.log(response)
                 this.setState({ ingredients: response.data })
             })
             .catch(error => {
@@ -44,7 +45,7 @@ class BurgerBuilder extends Component {
             }, 0);
 
         this.setState({ purchasable: sum > 0 })
-        console.log(ingredients)
+       // console.log(ingredients)
     }
     addIngredientHandler = (type) => {
         const oldCount = this.state.ingredients[type];
@@ -83,25 +84,26 @@ class BurgerBuilder extends Component {
         this.setState({ purchasing: false })
     }
     purchaseContinueHandler = () => {
-        this.setState({ loading: true });
-        let data = {
-            ingredients: this.state.ingredients,
-            price: this.state.totalPrice,
-            customer: {
-                name: 'Niki',
-                address: {
-                    street: 'Konstantin Pawlov',
-                    zipCode: 10000,
-                    country: 'Bulgaria'
-                }
-            }
-        }
+        this.props.history.push('/checkout');
+        // this.setState({ loading: true });
+        // let data = {
+        //     ingredients: this.state.ingredients,
+        //     price: this.state.totalPrice,
+        //     customer: {
+        //         name: 'Niki',
+        //         address: {
+        //             street: 'Konstantin Pawlov',
+        //             zipCode: 10000,
+        //             country: 'Bulgaria'
+        //         }
+        //     }
+        // }
 
-        axios.post('orders.json', data)
-            .then(response => {
-                this.setState({ loading: false, purchasing: false });
-            })
-            .catch(error => { this.setState({ loading: false, purchasing: false }) })
+        // axios.post('orders.json', data)
+        //     .then(response => {
+        //         this.setState({ loading: false, purchasing: false });
+        //     })
+        //     .catch(error => { this.setState({ loading: false, purchasing: false }) })
     }
     render() {
         const disableInfo = {
@@ -110,7 +112,7 @@ class BurgerBuilder extends Component {
         for (let key in disableInfo) {
             disableInfo[key] = disableInfo[key] <= 0
         }
-        let burger = this.state.error ? <p>Ingrediets can`t be loaded!</p> : <Spinner />
+        let burger = this.state.error ? <p>Ingredients can`t be loaded!</p> : <Spinner />
         let orderSummery;
         if (this.state.ingredients) { //we fetch the data and check if ingredients are not null 
             orderSummery = <OrderSummery price={this.state.totalPrice} cancelOrder={this.purchaseCancelHandler} continueOrder={this.purchaseContinueHandler} ingredients={this.state.ingredients} />
