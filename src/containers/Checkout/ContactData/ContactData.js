@@ -13,7 +13,11 @@ class ContactData extends Component {
                         type: 'text',
                         placeholder: 'Your Name'
                     },
-                    value: ''
+                    value: '', 
+                    validation: {
+                        required: true
+                    }, 
+                    valid: false
                 },
                 street: {
                     elementType: 'input',
@@ -21,7 +25,11 @@ class ContactData extends Component {
                         type: 'text',
                         placeholder: 'Street'
                     },
-                    value: ''
+                    value: '',
+                    validation: {
+                        required: true
+                    },
+                    valid: false
                 },
                 zipCode: {
                     elementType: 'input',
@@ -29,7 +37,13 @@ class ContactData extends Component {
                         type: 'text',
                         placeholder: 'ZIP code'
                     },
-                    value: ''
+                    value: '',
+                    validation: {
+                        required: true,
+                        minLength: 5,
+                        maxLength: 5
+                    },
+                    valid: false
                 },
                 country: {
                     elementType: 'input',
@@ -37,7 +51,11 @@ class ContactData extends Component {
                         type: 'text',
                         placeholder: 'Country'
                     },
-                    value: ''
+                    value: '',
+                    validation: {
+                        required: true
+                    },
+                    valid: false
                 },
                 email: {
                     elementType: 'input',
@@ -45,7 +63,11 @@ class ContactData extends Component {
                         type: 'email',
                         placeholder: 'Your e-mail'
                     },
-                    value: ''
+                    value: '',
+                    validation: {
+                        required: true
+                    },
+                    valid: false
                 },
                 deliveryMethod: {
                     elementType: 'select',
@@ -62,14 +84,31 @@ class ContactData extends Component {
         loading: false
     }; 
 
+        checkValidity(value, rules){
+           let isValid = true;
+
+            if(rules.required) {
+                isValid = value.trim() !== '' && isValid; 
+            }
+            if(rules.length){
+                isValid = value.length >= rules.minLength && isValid;
+            }
+            if(rules.maxLength){
+                isValid = value.length <= rules.maxLength && isValid;
+            }
+            return isValid
+        }
     orderHandler = (event) => {
           event.preventDefault()
-          console.log(this.props.ingredients);
             this.setState({ loading: true });
+            const formData = {};
+            for (let el in this.state.orderForm){
+                formData[el] = this.state.orderForm[el].value
+            }
         let data = {
             ingredients: this.props.ingredients,
             price: this.props.price,
-       
+            orderData :  formData
         }
      
           axios.post('orders.json', data)
@@ -81,10 +120,31 @@ class ContactData extends Component {
     }
 
         inputChangedHandler = (event, inputIdentifier) => {
-           const deepCloneState = JSON.parse(JSON.stringify(this.state.orderForm));
-           let updatedEl = deepCloneState[inputIdentifier];
-           updatedEl.value = event.target.value;
-           this.setState({orderForm: deepCloneState});
+            const updatedOrderForm = {
+                ...this.state.orderForm
+            };
+            const updatedFormElement = { 
+                ...updatedOrderForm[inputIdentifier]
+            };
+            updatedFormElement.value = event.target.value;
+            updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
+            // updatedFormElement.touched = true;
+            updatedOrderForm[inputIdentifier] = updatedFormElement;
+            
+        //     let formIsValid = true;
+        //     for (let inputIdentifier in updatedOrderForm) {
+        //         formIsValid = updatedOrderForm[inputIdentifier].valid && formIsValid;
+        //     }
+        console.log(updatedOrderForm)
+            this.setState({orderForm: updatedOrderForm});
+        // }
+        //    const deepCloneState = JSON.parse(JSON.stringify(this.state.orderForm));
+        //    let updatedEl = deepCloneState[inputIdentifier];
+        //    updatedEl.value = event.target.value;
+        //    console.log(typeof updatedEl.value)
+        //    updatedEl.valid = this.checkValidity(updatedEl.valid,updatedEl.validation )
+        //   console.log(updatedEl)
+        //    this.setState({orderForm: deepCloneState});
 
         //    const updatedElement = { 
         //       ...cloneState[inputIdentifier]
@@ -103,14 +163,14 @@ class ContactData extends Component {
             })
         }
         let form = (
-            <form>
+        <form onSubmit = {this.orderHandler}>
             {formElementArr.map(formEl => (
                 <Input key= {formEl.id} elementType = {formEl.config.elementType}
                 elementConfig = {formEl.config.elementConfig} 
                 value = {formEl.config.value}
                 changed = {(event) => this.inputChangedHandler(event, formEl.id)}
                 />
-        ))}
+            ))}
             <Button btnType = "Success" clicked = {this.orderHandler}>Order</Button>
         </form>
         );
