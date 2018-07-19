@@ -1,2 +1,2 @@
 # MyBurger-React-project
-Project
+Udemy project 
