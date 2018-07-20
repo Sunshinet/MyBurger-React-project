@@ -1,2 +1,3 @@
 # MyBurger-React-project
-Udemy project 
+This project I made for exercise.
+source: <bold>udemy.com</bold>
